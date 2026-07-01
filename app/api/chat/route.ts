@@ -1,10 +1,9 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
-console.log("API KEY:", process.env.GEMINI_API_KEY);
-const genAI = new GoogleGenerativeAI(
-  process.env.GEMINI_API_KEY!
-);
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY!,
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,22 +13,10 @@ export async function POST(req: NextRequest) {
       history = [],
     } = await req.json();
 
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
-    });
-
-    // ==========================
-    // Riwayat Percakapan
-    // ==========================
-
     const conversation = history
       .map((msg: any) => {
         if (typeof msg.content === "string") {
-          return `${
-            msg.role === "user"
-              ? "User"
-              : "Assistant"
-          }: ${msg.content}`;
+          return `${msg.role === "user" ? "User" : "Assistant"}: ${msg.content}`;
         }
 
         return `
@@ -42,33 +29,16 @@ Saran: ${msg.content.advice}
       })
       .join("\n");
 
-    // ==========================
-    // Prompt AI
-    // ==========================
-
     const prompt = `
 Kamu adalah HealthRoute AI.
 
 Tugasmu:
-
 - Ingat seluruh riwayat percakapan.
-- Jawab berdasarkan konteks sebelumnya.
-- Jika pengguna menambahkan gejala baru, gabungkan dengan gejala sebelumnya.
+- Gabungkan gejala lama dan baru.
 - Analisis gambar jika tersedia.
-- Jangan pernah memberikan diagnosis pasti.
+- Jangan memberikan diagnosis pasti.
 - Gunakan Bahasa Indonesia.
-- Balas HANYA dalam format JSON.
-
-Isi "hospitalKeyword" dengan kata pencarian Google Maps.
-
-Contoh:
-- Rumah Sakit
-- Puskesmas
-- Klinik Umum
-- Dokter Anak
-- Dokter Kulit
-- Dokter THT
-- Dokter Gigi
+- Balas HANYA JSON.
 
 Format:
 
@@ -81,77 +51,55 @@ Format:
   "emergency":false
 }
 
-Riwayat Percakapan:
+Riwayat:
 
 ${conversation}
 
-Pesan Terbaru:
+Pesan terbaru:
 
 ${message || "Tidak ada teks"}
 `;
 
-    let result;
+    let response;
 
     if (image) {
-      const base64 = image.split(",")[1];
-
-      result = await model.generateContent([
-        {
-          text: prompt,
-        },
-        {
-          inlineData: {
-            mimeType: "image/jpeg",
-            data: base64,
+      response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: prompt },
+              {
+                inlineData: {
+                  mimeType: "image/jpeg",
+                  data: image.split(",")[1],
+                },
+              },
+            ],
           },
-        },
-      ]);
+        ],
+      });
     } else {
-      result = await model.generateContent(prompt);
+      response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+      });
     }
 
-    const text = result.response
-      .text()
+    const text = response.text ?? "";
+
+    const cleaned = text
       .replace(/```json/g, "")
       .replace(/```/g, "")
       .trim();
 
-    console.log("========== RAW GEMINI ==========");
-    console.log(text);
-    console.log("================================");
-
-    let json;
-
-    try {
-      json = JSON.parse(text);
-    } catch (e) {
-      console.error("JSON Parse Error:", e);
-      console.error("Response Gemini:", text);
-
-      return NextResponse.json(
-        {
-          success: false,
-          reply: {
-            urgency: "Low",
-            recommendedService: "-",
-            possibleCondition: "-",
-            advice:
-              "Output Gemini bukan JSON yang valid.",
-            hospitalKeyword: "Rumah Sakit",
-            emergency: false,
-          },
-        },
-        {
-          status: 500,
-        }
-      );
-    }
+    const json = JSON.parse(cleaned);
 
     return NextResponse.json({
       success: true,
       reply: json,
     });
-
   } catch (error) {
     console.error("API Error:", error);
 
@@ -162,8 +110,7 @@ ${message || "Tidak ada teks"}
           urgency: "Low",
           recommendedService: "-",
           possibleCondition: "-",
-          advice:
-            "Terjadi kesalahan saat memproses permintaan.",
+          advice: "Terjadi kesalahan saat memproses permintaan.",
           hospitalKeyword: "Rumah Sakit",
           emergency: false,
         },
