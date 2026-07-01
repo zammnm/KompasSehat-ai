@@ -85,6 +85,10 @@ export default function ChatInput({
     const userMessage: Message = {
       role: "user",
       content: input || "📷 Mengirim gambar...",
+      time: new Date().toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -95,26 +99,21 @@ export default function ChatInput({
       let imageBase64 = "";
 
       if (image) {
-        imageBase64 = await new Promise<string>(
-          (resolve) => {
-            const reader = new FileReader();
+        imageBase64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
 
-            reader.onload = () => {
-              resolve(
-                reader.result?.toString() || ""
-              );
-            };
+          reader.onload = () => {
+            resolve(reader.result?.toString() || "");
+          };
 
-            reader.readAsDataURL(image);
-          }
-        );
+          reader.readAsDataURL(image);
+        });
       }
 
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: {
-          "Content-Type":
-            "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           message: input,
@@ -126,11 +125,19 @@ export default function ChatInput({
 
       const data = await res.json();
 
+      console.log("========== FRONTEND ==========");
+      console.log(data);
+      console.log("==============================");
+
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
           content: data.reply,
+          time: new Date().toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
         },
       ]);
 
@@ -139,7 +146,9 @@ export default function ChatInput({
       setInput("");
       setImage(null);
       resetTranscript();
-    } catch {
+    } catch (error) {
+      console.error(error);
+
       toast.error("Terjadi kesalahan");
 
       setMessages((prev) => [
@@ -147,6 +156,10 @@ export default function ChatInput({
         {
           role: "assistant",
           content: "Terjadi kesalahan.",
+          time: new Date().toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
         },
       ]);
     } finally {
@@ -156,7 +169,6 @@ export default function ChatInput({
 
   return (
     <div className="border-t border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-950">
-
       <ImageUpload
         onSelect={(file) => {
           setImage(file);
@@ -174,12 +186,9 @@ export default function ChatInput({
       )}
 
       <div className="mx-auto flex max-w-4xl items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-
         <input
           value={input}
-          onChange={(e) =>
-            setInput(e.target.value)
-          }
+          onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               sendMessage();
@@ -206,13 +215,9 @@ export default function ChatInput({
           className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-5 py-3 font-semibold text-white transition hover:scale-105 disabled:opacity-50"
         >
           <Send size={18} />
-          {loading
-            ? "Mengirim..."
-            : "Kirim"}
+          {loading ? "Mengirim..." : "Kirim"}
         </button>
-
       </div>
-
     </div>
   );
 }

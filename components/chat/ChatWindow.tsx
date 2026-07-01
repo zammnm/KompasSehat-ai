@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import jsPDF from "jspdf";
 
@@ -28,6 +28,14 @@ export default function ChatWindow({
   messages,
   loading,
 }: Props) {
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages, loading]);
+
   if (messages.length === 0) {
     return (
       <section className="flex flex-1 bg-slate-50">
@@ -70,7 +78,11 @@ export default function ChatWindow({
                     : "border border-slate-200 bg-white text-slate-700"
                 }`}
               >
-                {message.content}
+                <p>{message.content}</p>
+
+                <p className="mt-2 text-right text-xs opacity-70">
+                  {message.time}
+                </p>
               </motion.div>
             ) : (
               <motion.div
@@ -88,13 +100,18 @@ export default function ChatWindow({
                   duration: 0.45,
                 }}
               >
-                <AICard data={message.content} />
+                <AICard
+                  data={message.content}
+                  time={message.time}
+                />
               </motion.div>
             )}
           </div>
         ))}
 
         {loading && <LoadingCard />}
+
+        <div ref={bottomRef} />
 
       </div>
     </section>
@@ -106,7 +123,7 @@ function LoadingCard() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="w-full max-w-xl animate-pulse rounded-3xl border border-slate-200 bg-white p-7 shadow-lg"
+      className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-7 shadow-lg"
     >
       <div className="flex items-center gap-3">
         <LoaderCircle
@@ -119,222 +136,283 @@ function LoadingCard() {
         </h2>
       </div>
 
-      <div className="mt-7 space-y-4">
+      <div className="mt-6 space-y-3">
+        <p className="text-sm text-slate-500">
+          🔍 Menganalisis gejala...
+        </p>
+
+        <p className="text-sm text-slate-500">
+          🧠 Menghubungkan riwayat percakapan...
+        </p>
+
+        <p className="text-sm text-slate-500">
+          🏥 Menentukan rekomendasi layanan...
+        </p>
+      </div>
+
+      <div className="mt-6 space-y-4">
         <div className="h-4 w-40 rounded bg-slate-200" />
         <div className="h-4 w-full rounded bg-slate-200" />
         <div className="h-4 w-5/6 rounded bg-slate-200" />
         <div className="h-4 w-2/3 rounded bg-slate-200" />
-        <div className="h-12 rounded-2xl bg-slate-200" />
       </div>
     </motion.div>
   );
 }
-function AICard({ data }: { data: AIResponse }) {
-  const urgencyColor =
-    data.urgency === "High"
-      ? "text-red-600 bg-red-50"
-      : data.urgency === "Medium"
-      ? "text-amber-600 bg-amber-50"
-      : "text-emerald-600 bg-emerald-50";
 
-  function speakResult() {
-    if (!("speechSynthesis" in window)) return;
+function AICard({
+  data,
+  time,
+}: {
+  data: AIResponse;
+  time: string;
+}) {   const urgencyColor =
+  data.urgency === "High"
+    ? "text-red-600 bg-red-50"
+    : data.urgency === "Medium"
+    ? "text-amber-600 bg-amber-50"
+    : "text-emerald-600 bg-emerald-50";
 
-    window.speechSynthesis.cancel();
+function speakResult() {
+  if (!("speechSynthesis" in window)) return;
 
-    const utterance = new SpeechSynthesisUtterance(`
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(`
 Hasil analisis HealthRoute AI.
 Tingkat urgensi ${data.urgency}.
 Kemungkinan kondisi ${data.possibleCondition}.
 Rekomendasi layanan ${data.recommendedService}.
 Saran ${data.advice}.
-    `);
+  `);
 
-    utterance.lang = "id-ID";
+  utterance.lang = "id-ID";
+  window.speechSynthesis.speak(utterance);
+}
 
-    window.speechSynthesis.speak(utterance);
-  }
+function downloadPDF() {
+  const doc = new jsPDF();
 
-  function downloadPDF() {
-    const doc = new jsPDF();
+  doc.setFontSize(22);
+  doc.text("HealthRoute AI", 20, 20);
 
-    doc.setFontSize(22);
-    doc.text("HealthRoute AI", 20, 20);
+  doc.setFontSize(15);
+  doc.text("Laporan Analisis Kesehatan", 20, 32);
 
-    doc.setFontSize(15);
-    doc.text("Laporan Analisis Kesehatan", 20, 32);
+  doc.setFontSize(11);
 
-    doc.setFontSize(11);
+  doc.text(
+    `Tanggal : ${new Date().toLocaleString("id-ID")}`,
+    20,
+    46
+  );
 
-    doc.text(
-      `Tanggal : ${new Date().toLocaleString("id-ID")}`,
-      20,
-      46
-    );
+  doc.text(`Urgensi : ${data.urgency}`, 20, 60);
 
-    doc.text(`Urgensi : ${data.urgency}`, 20, 60);
+  doc.text(
+    `Layanan : ${data.recommendedService}`,
+    20,
+    74
+  );
 
-    doc.text(
-      `Layanan : ${data.recommendedService}`,
-      20,
-      74
-    );
+  doc.text("Kemungkinan Kondisi :", 20, 90);
 
-    doc.text("Kemungkinan Kondisi :", 20, 90);
+  const condition = doc.splitTextToSize(
+    data.possibleCondition,
+    170
+  );
 
-    const condition = doc.splitTextToSize(
-      data.possibleCondition,
-      170
-    );
+  doc.text(condition, 20, 98);
 
-    doc.text(condition, 20, 98);
+  const adviceY =
+    98 + condition.length * 7 + 10;
 
-    const adviceY =
-      98 + condition.length * 7 + 10;
+  doc.text("Saran :", 20, adviceY);
 
-    doc.text("Saran :", 20, adviceY);
+  const advice = doc.splitTextToSize(
+    data.advice,
+    170
+  );
 
-    const advice = doc.splitTextToSize(
-      data.advice,
-      170
-    );
+  doc.text(advice, 20, adviceY + 8);
 
-    doc.text(advice, 20, adviceY + 8);
+  const emergencyY =
+    adviceY + advice.length * 7 + 18;
 
-    const emergencyY =
-      adviceY + advice.length * 7 + 18;
+  doc.text(
+    `Darurat : ${
+      data.emergency ? "YA" : "TIDAK"
+    }`,
+    20,
+    emergencyY
+  );
 
-    doc.text(
-      `Darurat : ${
-        data.emergency ? "YA" : "TIDAK"
-      }`,
-      20,
-      emergencyY
-    );
+  doc.save("HealthRoute-Report.pdf");
+}
 
-    doc.save("HealthRoute-Report.pdf");
-  }
+useEffect(() => {
+  speakResult();
 
-  useEffect(() => {
-    speakResult();
+  return () => window.speechSynthesis.cancel();
+}, []);
 
-    return () =>
-      window.speechSynthesis.cancel();
-  }, []);
+return (
+  <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-7 shadow-lg">
 
-  return (
-    <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-7 shadow-lg">
+    <h2 className="text-xl font-bold">
+      🤖 Analisis Kesehatan AI
+    </h2>
 
-      <h2 className="text-xl font-bold">
-        🤖 Analisis Kesehatan AI
-      </h2>
+    <p className="mt-2 text-right text-xs text-slate-400">
+      {time}
+    </p>
 
-      <div className="mt-7 space-y-6">
+    <div className="mt-7 space-y-6">
 
-        <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3">
+        <AlertTriangle
+          size={22}
+          className="text-amber-500"
+        />
+
+        <div>
+          <p className="text-xs uppercase text-slate-400">
+            Tingkat Urgensi
+          </p>
+
+          <span
+            className={`mt-1 inline-flex rounded-full px-3 py-1 text-sm font-semibold ${urgencyColor}`}
+          >
+            {data.urgency}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex gap-3">
+        <HeartPulse className="text-blue-600" />
+
+        <div>
+          <p className="text-xs uppercase text-slate-400">
+            Layanan Kesehatan
+          </p>
+
+          <p className="font-semibold">
+            {data.recommendedService}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex gap-3">
+        <Stethoscope className="text-violet-600" />
+
+        <div>
+          <p className="text-xs uppercase text-slate-400">
+            Kemungkinan Kondisi
+          </p>
+
+          <p>{data.possibleCondition}</p>
+        </div>
+      </div>
+
+      <div className="flex gap-3">
+        <ShieldAlert className="text-green-600" />
+
+        <div>
+          <p className="text-xs uppercase text-slate-400">
+            Saran
+          </p>
+
+          <p>{data.advice}</p>
+        </div>
+      </div>
+
+      {data.emergency && (
+  <motion.div
+    initial={{ opacity: 0, y: -20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="rounded-2xl border border-red-300 bg-gradient-to-r from-red-500 to-red-600 p-5 text-white shadow-lg"
+  >
+    <div className="flex items-start gap-3">
+      <AlertTriangle size={28} />
+
+      <div>
+        <h3 className="text-lg font-bold">
+          Keadaan Darurat
+        </h3>
+
+        <p className="mt-2 text-sm leading-6">
+          Berdasarkan analisis AI, kondisi ini
+          memerlukan penanganan medis segera.
+          Segera menuju IGD atau hubungi layanan
+          darurat terdekat.
+        </p>
+      </div>
+    </div>
+  </motion.div>
+)}
+
+      <motion.button
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
+        onClick={speakResult}
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-100 py-3 font-semibold"
+      >
+        <Volume2 size={20} />
+        Dengarkan Hasil
+      </motion.button>
+
+      <motion.button
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
+        onClick={() =>
+          window.open(
+            `https://www.google.com/maps/search/${encodeURIComponent(
+              data.hospitalKeyword
+            )}`,
+            "_blank"
+          )
+        }
+        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-3 font-semibold text-white"
+      >
+        <MapPinned size={20} />
+        Cari Fasilitas Kesehatan
+      </motion.button>
+
+      <motion.button
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
+        onClick={downloadPDF}
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-blue-600 py-3 font-semibold text-blue-600 hover:bg-blue-50"
+      >
+        <Download size={20} />
+        Download Laporan PDF
+      </motion.button>
+
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+        <div className="flex items-start gap-3">
           <AlertTriangle
-            size={22}
-            className="text-amber-500"
+            size={20}
+            className="mt-1 text-amber-600"
           />
 
           <div>
-            <p className="text-xs uppercase text-slate-400">
-              Tingkat Urgensi
-            </p>
+            <h3 className="font-semibold text-amber-800">
+              Disclaimer Medis
+            </h3>
 
-            <span
-              className={`mt-1 inline-flex rounded-full px-3 py-1 text-sm font-semibold ${urgencyColor}`}
-            >
-              {data.urgency}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex gap-3">
-          <HeartPulse className="text-blue-600" />
-
-          <div>
-            <p className="text-xs uppercase text-slate-400">
-              Layanan Kesehatan
-            </p>
-
-            <p className="font-semibold">
-              {data.recommendedService}
+            <p className="mt-1 text-sm leading-6 text-amber-700">
+              Hasil analisis ini dibuat oleh AI dan
+              bukan merupakan diagnosis medis.
+              Gunakan sebagai informasi awal saja.
+              Jika gejala memburuk atau terjadi
+              keadaan darurat, segera kunjungi
+              dokter atau rumah sakit terdekat.
             </p>
           </div>
         </div>
-
-        <div className="flex gap-3">
-          <Stethoscope className="text-violet-600" />
-
-          <div>
-            <p className="text-xs uppercase text-slate-400">
-              Kemungkinan Kondisi
-            </p>
-
-            <p>{data.possibleCondition}</p>
-          </div>
-        </div>
-
-        <div className="flex gap-3">
-          <ShieldAlert className="text-green-600" />
-
-          <div>
-            <p className="text-xs uppercase text-slate-400">
-              Saran
-            </p>
-
-            <p>{data.advice}</p>
-          </div>
-        </div>
-
-        {data.emergency && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
-            <p className="font-semibold text-red-700">
-              🚨 Kondisi ini memerlukan penanganan segera.
-              Segera menuju IGD atau hubungi layanan darurat.
-            </p>
-          </div>
-        )}
-
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={speakResult}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-100 py-3 font-semibold"
-        >
-          <Volume2 size={20} />
-          Dengarkan Hasil
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={() =>
-            window.open(
-              `https://www.google.com/maps/search/${encodeURIComponent(
-                data.recommendedService
-              )}`,
-              "_blank"
-            )
-          }
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-3 font-semibold text-white"
-        >
-          <MapPinned size={20} />
-          Cari Fasilitas Kesehatan
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={downloadPDF}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-blue-600 py-3 font-semibold text-blue-600 hover:bg-blue-50"
-        >
-          <Download size={20} />
-          Download Laporan PDF
-        </motion.button>
-
       </div>
+
     </div>
-  );
+  </div>
+);
 }

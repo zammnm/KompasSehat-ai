@@ -19,13 +19,13 @@ export interface AIResponse {
 export interface Message {
   role: "user" | "assistant";
   content: string | AIResponse;
+  time: string;
 }
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Load chat saat halaman dibuka
   useEffect(() => {
     const saved = localStorage.getItem("healthroute-chat");
 
@@ -34,7 +34,6 @@ export default function ChatPage() {
     }
   }, []);
 
-  // Simpan setiap ada perubahan chat
   useEffect(() => {
     localStorage.setItem(
       "healthroute-chat",
@@ -47,10 +46,10 @@ export default function ChatPage() {
       <ChatHeader />
 
       <div className="flex flex-1 overflow-hidden">
-      <ChatSidebar
-  messages={messages}
-  setMessages={setMessages}
-/>
+        <ChatSidebar
+          messages={messages}
+          setMessages={setMessages}
+        />
 
         <div className="flex flex-1 flex-col">
           <ChatWindow

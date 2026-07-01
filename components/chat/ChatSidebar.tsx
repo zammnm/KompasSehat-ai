@@ -1,7 +1,10 @@
 "use client";
 
 import { Dispatch, SetStateAction } from "react";
+import { motion } from "framer-motion";
+
 import { Message } from "@/app/chat/page";
+
 import {
   MessageSquare,
   Plus,
@@ -31,11 +34,39 @@ export default function ChatSidebar({
 
       <button
         onClick={newChat}
-        className="mb-6 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 py-3 font-semibold text-white"
+        className="mb-6 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 py-3 font-semibold text-white transition hover:scale-105"
       >
         <Plus size={18} />
         New Chat
       </button>
+
+      <div className="mb-5 rounded-2xl bg-slate-100 p-4">
+
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-slate-500">
+            Total Chat
+          </span>
+
+          <span className="font-bold text-slate-800">
+            {history.length}
+          </span>
+        </div>
+
+        <div className="mt-3 flex items-center justify-between">
+          <span className="text-sm text-slate-500">
+            AI Response
+          </span>
+
+          <span className="font-bold text-slate-800">
+            {
+              messages.filter(
+                (m) => m.role === "assistant"
+              ).length
+            }
+          </span>
+        </div>
+
+      </div>
 
       <div className="flex-1 overflow-y-auto">
 
@@ -49,9 +80,15 @@ export default function ChatSidebar({
           </p>
         ) : (
           history.map((msg, index) => (
-            <div
+            <motion.div
               key={index}
-              className="mb-2 rounded-xl border border-slate-200 p-3"
+              whileHover={{
+                scale: 1.02,
+              }}
+              whileTap={{
+                scale: 0.98,
+              }}
+              className="mb-3 cursor-pointer rounded-xl border border-slate-200 bg-white p-3 shadow-sm transition hover:border-blue-300 hover:shadow-md"
             >
               <div className="flex items-start gap-2">
 
@@ -60,14 +97,22 @@ export default function ChatSidebar({
                   className="mt-0.5 text-blue-600"
                 />
 
-                <p className="line-clamp-2 text-sm">
-                  {typeof msg.content === "string"
-                    ? msg.content
-                    : ""}
-                </p>
+                <div className="flex-1">
+
+                  <p className="line-clamp-2 text-sm font-medium text-slate-700">
+                    {typeof msg.content === "string"
+                      ? msg.content
+                      : ""}
+                  </p>
+
+                  <p className="mt-2 text-xs text-slate-400">
+                    Chat #{index + 1}
+                  </p>
+
+                </div>
 
               </div>
-            </div>
+            </motion.div>
           ))
         )}
 
@@ -75,7 +120,7 @@ export default function ChatSidebar({
 
       <button
         onClick={newChat}
-        className="mt-5 flex items-center justify-center gap-2 rounded-xl border border-red-300 py-3 text-red-600"
+        className="mt-5 flex items-center justify-center gap-2 rounded-xl border border-red-300 py-3 font-semibold text-red-600 transition hover:bg-red-50"
       >
         <Trash2 size={18} />
         Hapus Riwayat

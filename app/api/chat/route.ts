@@ -1,10 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
-console.log("GEMINI =", process.env.GEMINI_API_KEY);
+console.log("KEY =", process.env.GEMINI_API_KEY);
 
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY!,
+  apiKey: process.env.GEMINI_API_KEY || "",
 });
 
 export async function POST(req: NextRequest) {
@@ -18,7 +18,9 @@ export async function POST(req: NextRequest) {
     const conversation = history
       .map((msg: any) => {
         if (typeof msg.content === "string") {
-          return `${msg.role === "user" ? "User" : "Assistant"}: ${msg.content}`;
+          return `${
+            msg.role === "user" ? "User" : "Assistant"
+          }: ${msg.content}`;
         }
 
         return `
@@ -71,7 +73,9 @@ ${message || "Tidak ada teks"}
           {
             role: "user",
             parts: [
-              { text: prompt },
+              {
+                text: prompt,
+              },
               {
                 inlineData: {
                   mimeType: "image/jpeg",
@@ -89,12 +93,20 @@ ${message || "Tidak ada teks"}
       });
     }
 
+    console.log("========== RAW RESPONSE ==========");
+    console.log(response.text);
+    console.log("==================================");
+
     const text = response.text ?? "";
 
     const cleaned = text
       .replace(/```json/g, "")
       .replace(/```/g, "")
       .trim();
+
+    console.log("========== CLEANED ==========");
+    console.log(cleaned);
+    console.log("=============================");
 
     const json = JSON.parse(cleaned);
 
