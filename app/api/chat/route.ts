@@ -1,7 +1,9 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const genAI = new GoogleGenerativeAI(
+  process.env.GEMINI_API_KEY!
+);
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,7 +25,9 @@ export async function POST(req: NextRequest) {
       .map((msg: any) => {
         if (typeof msg.content === "string") {
           return `${
-            msg.role === "user" ? "User" : "Assistant"
+            msg.role === "user"
+              ? "User"
+              : "Assistant"
           }: ${msg.content}`;
         }
 
@@ -54,16 +58,16 @@ Tugasmu:
 - Gunakan Bahasa Indonesia.
 - Balas HANYA dalam format JSON.
 
-Isi "hospitalKeyword" dengan kata pencarian Google Maps yang paling sesuai.
+Isi "hospitalKeyword" dengan kata pencarian Google Maps.
 
 Contoh:
-- "Rumah Sakit"
-- "Puskesmas"
-- "Klinik Umum"
-- "Dokter Anak"
-- "Dokter Kulit"
-- "Dokter THT"
-- "Dokter Gigi"
+- Rumah Sakit
+- Puskesmas
+- Klinik Umum
+- Dokter Anak
+- Dokter Kulit
+- Dokter THT
+- Dokter Gigi
 
 Format:
 
@@ -111,14 +115,44 @@ ${message || "Tidak ada teks"}
       .replace(/```/g, "")
       .trim();
 
-    const json = JSON.parse(text);
+    console.log("========== RAW GEMINI ==========");
+    console.log(text);
+    console.log("================================");
+
+    let json;
+
+    try {
+      json = JSON.parse(text);
+    } catch (e) {
+      console.error("JSON Parse Error:", e);
+      console.error("Response Gemini:", text);
+
+      return NextResponse.json(
+        {
+          success: false,
+          reply: {
+            urgency: "Low",
+            recommendedService: "-",
+            possibleCondition: "-",
+            advice:
+              "Output Gemini bukan JSON yang valid.",
+            hospitalKeyword: "Rumah Sakit",
+            emergency: false,
+          },
+        },
+        {
+          status: 500,
+        }
+      );
+    }
 
     return NextResponse.json({
       success: true,
       reply: json,
     });
+
   } catch (error) {
-    console.error(error);
+    console.error("API Error:", error);
 
     return NextResponse.json(
       {
@@ -129,6 +163,7 @@ ${message || "Tidak ada teks"}
           possibleCondition: "-",
           advice:
             "Terjadi kesalahan saat memproses permintaan.",
+          hospitalKeyword: "Rumah Sakit",
           emergency: false,
         },
       },
