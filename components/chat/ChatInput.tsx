@@ -125,21 +125,21 @@ export default function ChatInput({
 
       const data = await res.json();
 
-      console.log("========== FRONTEND ==========");
-      console.log(data);
-      console.log("==============================");
+console.log("========== FRONTEND ==========");
+console.log(data);
+console.log("==============================");
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: data.reply,
-          time: new Date().toLocaleTimeString("id-ID", {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        },
-      ]);
+setMessages((prev) => [
+  ...prev,
+  {
+    role: "assistant",
+    content: data.reply,
+    time: new Date().toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  },
+]);
 
       toast.success("🤖 Analisis selesai");
 

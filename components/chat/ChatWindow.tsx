@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import jsPDF from "jspdf";
+import { TypeAnimation } from "react-type-animation";
 
 import { AIResponse, Message } from "@/app/chat/page";
 
@@ -47,7 +48,6 @@ export default function ChatWindow({
   return (
     <section className="flex-1 overflow-y-auto bg-slate-50 p-8">
       <div className="mx-auto max-w-4xl space-y-6">
-
         {messages.map((message, index) => (
           <div
             key={index}
@@ -112,13 +112,32 @@ export default function ChatWindow({
         {loading && <LoadingCard />}
 
         <div ref={bottomRef} />
-
       </div>
     </section>
   );
 }
 
 function LoadingCard() {
+  const [step, setStep] = useState(0);
+
+  const steps = [
+    "🔍 Menganalisis gejala...",
+    "🧠 Menghubungkan riwayat percakapan...",
+    "📋 Mengevaluasi tingkat urgensi...",
+    "🏥 Menentukan rekomendasi layanan...",
+    "✅ Menyusun hasil analisis...",
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStep((prev) =>
+        prev < steps.length - 1 ? prev + 1 : prev
+      );
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -132,29 +151,26 @@ function LoadingCard() {
         />
 
         <h2 className="text-lg font-bold">
-          HealthRoute AI sedang menganalisis...
+          HealthRoute AI sedang berpikir...
         </h2>
       </div>
 
-      <div className="mt-6 space-y-3">
-        <p className="text-sm text-slate-500">
-          🔍 Menganalisis gejala...
-        </p>
-
-        <p className="text-sm text-slate-500">
-          🧠 Menghubungkan riwayat percakapan...
-        </p>
-
-        <p className="text-sm text-slate-500">
-          🏥 Menentukan rekomendasi layanan...
-        </p>
+      <div className="mt-6 rounded-2xl bg-slate-100 p-4">
+        <motion.p
+          key={step}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="font-medium text-slate-700"
+        >
+          {steps[step]}
+        </motion.p>
       </div>
 
       <div className="mt-6 space-y-4">
-        <div className="h-4 w-40 rounded bg-slate-200" />
-        <div className="h-4 w-full rounded bg-slate-200" />
-        <div className="h-4 w-5/6 rounded bg-slate-200" />
-        <div className="h-4 w-2/3 rounded bg-slate-200" />
+        <div className="h-4 w-40 animate-pulse rounded bg-slate-200" />
+        <div className="h-4 w-full animate-pulse rounded bg-slate-200" />
+        <div className="h-4 w-5/6 animate-pulse rounded bg-slate-200" />
+        <div className="h-4 w-2/3 animate-pulse rounded bg-slate-200" />
       </div>
     </motion.div>
   );
@@ -166,99 +182,125 @@ function AICard({
 }: {
   data: AIResponse;
   time: string;
-}) {   const urgencyColor =
-  data.urgency === "High"
-    ? "text-red-600 bg-red-50"
-    : data.urgency === "Medium"
-    ? "text-amber-600 bg-amber-50"
-    : "text-emerald-600 bg-emerald-50";
+}) {
+  
 
-function speakResult() {
-  if (!("speechSynthesis" in window)) return;
+  const urgencyColor =
+    data.urgency === "High"
+      ? "text-red-600 bg-red-50"
+      : data.urgency === "Medium"
+      ? "text-amber-600 bg-amber-50"
+      : "text-emerald-600 bg-emerald-50";
 
-  window.speechSynthesis.cancel();
+  const riskValue =
+    data.urgency === "High"
+      ? 100
+      : data.urgency === "Medium"
+      ? 65
+      : 30;
 
-  const utterance = new SpeechSynthesisUtterance(`
+  const [showEmergency, setShowEmergency] =
+    useState(false);
+
+  function speakResult() {
+    if (!("speechSynthesis" in window))
+      return;
+
+    window.speechSynthesis.cancel();
+
+    const utterance =
+      new SpeechSynthesisUtterance(`
 Hasil analisis HealthRoute AI.
 Tingkat urgensi ${data.urgency}.
 Kemungkinan kondisi ${data.possibleCondition}.
 Rekomendasi layanan ${data.recommendedService}.
 Saran ${data.advice}.
-  `);
+`);
 
-  utterance.lang = "id-ID";
-  window.speechSynthesis.speak(utterance);
-}
+    utterance.lang = "id-ID";
 
-function downloadPDF() {
-  const doc = new jsPDF();
+    window.speechSynthesis.speak(
+      utterance
+    );
+  }
 
-  doc.setFontSize(22);
-  doc.text("HealthRoute AI", 20, 20);
+  function downloadPDF() {
+    const doc = new jsPDF();
 
-  doc.setFontSize(15);
-  doc.text("Laporan Analisis Kesehatan", 20, 32);
+    doc.setFontSize(22);
+    doc.text("HealthRoute AI", 20, 20);
 
-  doc.setFontSize(11);
+    doc.setFontSize(15);
+    doc.text("Laporan Analisis Kesehatan", 20, 32);
 
-  doc.text(
-    `Tanggal : ${new Date().toLocaleString("id-ID")}`,
-    20,
-    46
-  );
+    doc.setFontSize(11);
 
-  doc.text(`Urgensi : ${data.urgency}`, 20, 60);
+    doc.text(
+      `Tanggal : ${new Date().toLocaleString("id-ID")}`,
+      20,
+      46
+    );
 
-  doc.text(
-    `Layanan : ${data.recommendedService}`,
-    20,
-    74
-  );
+    doc.text(`Urgensi : ${data.urgency}`, 20, 60);
 
-  doc.text("Kemungkinan Kondisi :", 20, 90);
+    doc.text(
+      `Layanan : ${data.recommendedService}`,
+      20,
+      74
+    );
 
-  const condition = doc.splitTextToSize(
-    data.possibleCondition,
-    170
-  );
+    doc.text("Kemungkinan Kondisi :", 20, 90);
 
-  doc.text(condition, 20, 98);
+    const condition = doc.splitTextToSize(
+      data.possibleCondition,
+      170
+    );
 
-  const adviceY =
-    98 + condition.length * 7 + 10;
+    doc.text(condition, 20, 98);
 
-  doc.text("Saran :", 20, adviceY);
+    const adviceY =
+      98 + condition.length * 7 + 10;
 
-  const advice = doc.splitTextToSize(
-    data.advice,
-    170
-  );
+    doc.text("Saran :", 20, adviceY);
 
-  doc.text(advice, 20, adviceY + 8);
+    const advice = doc.splitTextToSize(
+      data.advice,
+      170
+    );
 
-  const emergencyY =
-    adviceY + advice.length * 7 + 18;
+    doc.text(advice, 20, adviceY + 8);
 
-  doc.text(
-    `Darurat : ${
-      data.emergency ? "YA" : "TIDAK"
-    }`,
-    20,
-    emergencyY
-  );
+    const emergencyY =
+      adviceY + advice.length * 7 + 18;
 
-  doc.save("HealthRoute-Report.pdf");
-}
+    doc.text(
+      `Darurat : ${
+        data.emergency ? "YA" : "TIDAK"
+      }`,
+      20,
+      emergencyY
+    );
 
-useEffect(() => {
-  speakResult();
+    doc.save("HealthRoute-Report.pdf");
+  }
 
-  return () => window.speechSynthesis.cancel();
-}, []);
+  useEffect(() => {
+    speakResult();
 
-return (
-  <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-7 shadow-lg">
+    if (data.emergency) {
+      setShowEmergency(true);
+    }
 
+    return () =>
+      window.speechSynthesis.cancel();
+  }, []);
+
+  function closeEmergency() {
+    setShowEmergency(false);
+  }
+
+  return (
+    <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-7 shadow-lg">
     <h2 className="text-xl font-bold">
       🤖 Analisis Kesehatan AI
     </h2>
@@ -268,6 +310,28 @@ return (
     </p>
 
     <div className="mt-7 space-y-6">
+
+      <div>
+        <div className="mb-2 flex justify-between text-sm">
+          <span>Risk Score</span>
+          <span>{riskValue}%</span>
+        </div>
+
+        <div className="h-3 overflow-hidden rounded-full bg-slate-200">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${riskValue}%` }}
+            transition={{ duration: 1 }}
+            className={`h-full rounded-full ${
+              data.urgency === "High"
+                ? "bg-red-500"
+                : data.urgency === "Medium"
+                ? "bg-yellow-500"
+                : "bg-green-500"
+            }`}
+          />
+        </div>
+      </div>
 
       <div className="flex items-center gap-3">
         <AlertTriangle
@@ -310,7 +374,12 @@ return (
             Kemungkinan Kondisi
           </p>
 
-          <p>{data.possibleCondition}</p>
+          <TypeAnimation
+            sequence={[data.possibleCondition]}
+            speed={70}
+            cursor={false}
+            repeat={0}
+          />
         </div>
       </div>
 
@@ -322,34 +391,47 @@ return (
             Saran
           </p>
 
-          <p>{data.advice}</p>
+          <TypeAnimation
+            sequence={[data.advice]}
+            speed={70}
+            cursor={false}
+            repeat={0}
+          />
         </div>
       </div>
 
       {data.emergency && (
-  <motion.div
-    initial={{ opacity: 0, y: -20 }}
-    animate={{ opacity: 1, y: 0 }}
-    className="rounded-2xl border border-red-300 bg-gradient-to-r from-red-500 to-red-600 p-5 text-white shadow-lg"
-  >
-    <div className="flex items-start gap-3">
-      <AlertTriangle size={28} />
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: -20,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          className="rounded-2xl border border-red-300 bg-gradient-to-r from-red-500 to-red-600 p-5 text-white shadow-lg"
+        >
+          <div className="flex items-start gap-3">
+            <AlertTriangle size={28} />
 
-      <div>
-        <h3 className="text-lg font-bold">
-          Keadaan Darurat
-        </h3>
+            <div>
+              <h3 className="text-lg font-bold">
+                Keadaan Darurat
+              </h3>
 
-        <p className="mt-2 text-sm leading-6">
-          Berdasarkan analisis AI, kondisi ini
-          memerlukan penanganan medis segera.
-          Segera menuju IGD atau hubungi layanan
-          darurat terdekat.
-        </p>
-      </div>
-    </div>
-  </motion.div>
-)}
+              <p className="mt-2 text-sm leading-6">
+                Berdasarkan analisis AI,
+                kondisi ini memerlukan
+                penanganan medis segera.
+                Segera menuju IGD atau
+                hubungi layanan darurat
+                terdekat.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       <motion.button
         whileHover={{ scale: 1.03 }}
@@ -364,14 +446,34 @@ return (
       <motion.button
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
-        onClick={() =>
-          window.open(
-            `https://www.google.com/maps/search/${encodeURIComponent(
-              data.hospitalKeyword
-            )}`,
-            "_blank"
-          )
-        }
+        onClick={() => {
+          if (!navigator.geolocation) {
+            alert("Browser tidak mendukung GPS.");
+            return;
+          }
+
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const lat = position.coords.latitude;
+              const lng = position.coords.longitude;
+
+              window.open(
+                `https://www.google.com/maps/search/${encodeURIComponent(
+                  data.hospitalKeyword
+                )}/@${lat},${lng},15z`,
+                "_blank"
+              );
+            },
+            () => {
+              window.open(
+                `https://www.google.com/maps/search/${encodeURIComponent(
+                  data.hospitalKeyword
+                )}`,
+                "_blank"
+              );
+            }
+          );
+        }}
         className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-3 font-semibold text-white"
       >
         <MapPinned size={20} />
@@ -387,32 +489,32 @@ return (
         <Download size={20} />
         Download Laporan PDF
       </motion.button>
-
       <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-        <div className="flex items-start gap-3">
-          <AlertTriangle
-            size={20}
-            className="mt-1 text-amber-600"
-          />
+          <div className="flex items-start gap-3">
+            <AlertTriangle
+              size={20}
+              className="mt-1 text-amber-600"
+            />
 
-          <div>
-            <h3 className="font-semibold text-amber-800">
-              Disclaimer Medis
-            </h3>
+            <div>
+              <h3 className="font-semibold text-amber-800">
+                Disclaimer Medis
+              </h3>
 
-            <p className="mt-1 text-sm leading-6 text-amber-700">
-              Hasil analisis ini dibuat oleh AI dan
-              bukan merupakan diagnosis medis.
-              Gunakan sebagai informasi awal saja.
-              Jika gejala memburuk atau terjadi
-              keadaan darurat, segera kunjungi
-              dokter atau rumah sakit terdekat.
-            </p>
+              <p className="mt-1 text-sm leading-6 text-amber-700">
+                Hasil analisis ini dibuat oleh AI
+                dan bukan merupakan diagnosis
+                medis. Gunakan sebagai informasi
+                awal saja. Jika gejala memburuk
+                atau terjadi keadaan darurat,
+                segera kunjungi dokter atau
+                rumah sakit terdekat.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
+      </div>
     </div>
-  </div>
-);
+  );
 }

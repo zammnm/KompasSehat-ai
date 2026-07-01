@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
-console.log("KEY =", process.env.GEMINI_API_KEY);
+
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
@@ -14,6 +14,9 @@ export async function POST(req: NextRequest) {
       image,
       history = [],
     } = await req.json();
+    
+
+    console.log("HISTORY =", history.length);
 
     const conversation = history
       .map((msg: any) => {
