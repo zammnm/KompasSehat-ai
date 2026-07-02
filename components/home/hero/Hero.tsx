@@ -11,7 +11,7 @@ export default function Hero() {
       <HeroBackground />
 
       <Container>
-        <div className="grid min-h-screen items-center gap-20 py-28 lg:grid-cols-2">
+        <div className="grid min-h-[calc(100vh-80px)] items-center gap-14 py-12 lg:min-h-screen lg:grid-cols-2 lg:gap-20 lg:py-28">
 
           <FadeIn delay={0.1}>
             <HeroContent />

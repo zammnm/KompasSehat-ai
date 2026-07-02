@@ -46,8 +46,8 @@ export default function ChatWindow({
   }
 
   return (
-    <section className="flex-1 overflow-y-auto bg-slate-50 p-3 sm:p-5 lg:p-8">
-      <div className="mx-auto max-w-4xl space-y-6">
+    <section className="flex-1 overflow-y-auto bg-slate-50 p-3 sm:p-5 lg:p-6">
+      <div className="mx-auto w-full max-w-4xl space-y-6">
         {messages.map((message, index) => (
           <div
             key={index}
@@ -79,7 +79,7 @@ export default function ChatWindow({
                 }`}
               >
                 <p>{message.content}</p>
-
+  
                 <p className="mt-2 text-right text-xs opacity-70">
                   {message.time}
                 </p>
@@ -108,9 +108,9 @@ export default function ChatWindow({
             )}
           </div>
         ))}
-
+  
         {loading && <LoadingCard />}
-
+  
         <div ref={bottomRef} />
       </div>
     </section>
@@ -142,7 +142,7 @@ function LoadingCard() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="w-full max-w-full rounded-3xl border border-slate-200 bg-white p-4 shadow-lg sm:max-w-xl sm:p-7"
+      className="w-full rounded-3xl border border-slate-200 bg-white p-4 shadow-lg sm:p-7"
     >
       <div className="flex items-center gap-3">
         <LoaderCircle
@@ -422,7 +422,7 @@ Saran ${data.advice}.
         </motion.div>
       )}
 
-      <motion.button
+<motion.button
         whileTap={{ scale: 0.97 }}
         onClick={speakResult}
         className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-100 py-3 font-semibold"
@@ -476,32 +476,30 @@ Saran ${data.advice}.
         <Download size={20} />
         Unduh Laporan PDF
       </motion.button>
+
       <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-          <div className="flex items-start gap-3">
-            <AlertTriangle
-              size={20}
-              className="mt-1 text-amber-600"
-            />
+        <div className="flex items-start gap-3">
+          <AlertTriangle
+            size={20}
+            className="mt-1 text-amber-600"
+          />
 
-            <div>
-              <h3 className="font-semibold text-amber-800">
-                Disclaimer Medis
-              </h3>
+          <div>
+            <h3 className="font-semibold text-amber-800">
+              Disclaimer Medis
+            </h3>
 
-              <p className="mt-1 text-sm leading-6 text-amber-700">
-                Hasil analisis ini dibuat oleh AI
-                dan bukan merupakan diagnosis
-                medis. Gunakan sebagai informasi
-                awal saja. Jika gejala memburuk
-                atau terjadi keadaan darurat,
-                segera kunjungi dokter atau
-                rumah sakit terdekat.
-              </p>
-            </div>
+            <p className="mt-1 text-sm leading-6 text-amber-700">
+              Hasil analisis ini dibuat oleh AI dan bukan merupakan diagnosis
+              medis. Gunakan sebagai informasi awal saja. Jika gejala
+              memburuk atau terjadi keadaan darurat, segera kunjungi dokter
+              atau rumah sakit terdekat.
+            </p>
           </div>
         </div>
-
       </div>
+
     </div>
-  );
+  </div>
+);
 }

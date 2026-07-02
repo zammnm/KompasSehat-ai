@@ -16,7 +16,7 @@ export default function HeroIllustration() {
         </div>
       </div>
 
-      <GlassCard className="relative p-7">
+      <GlassCard className="relative p-5 lg:p-7">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -64,7 +64,7 @@ export default function HeroIllustration() {
 
         {/* Hasil */}
         <div className="mt-8 rounded-3xl border border-slate-200 bg-slate-50 p-5">
-          <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <p className="text-xs uppercase text-slate-400">
                 Tingkat Urgensi
@@ -96,7 +96,7 @@ export default function HeroIllustration() {
             </div>
           </div>
 
-          <button className="mt-6 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-3 font-semibold text-white">
+          <button className="mt-5 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-3 text-sm font-semibold text-white">
             Buka Google Maps
           </button>
         </div>

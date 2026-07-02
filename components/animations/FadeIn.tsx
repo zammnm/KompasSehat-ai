@@ -17,12 +17,9 @@ export default function FadeIn({
         opacity: 0,
         y: 40,
       }}
-      whileInView={{
+      animate={{
         opacity: 1,
         y: 0,
-      }}
-      viewport={{
-        once: true,
       }}
       transition={{
         duration: 0.6,

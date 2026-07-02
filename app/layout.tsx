@@ -18,7 +18,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "KompasSehat AI",
-  description: "AI Healthcare Assistant",
+  description:
+    "KompasSehat AI adalah asisten kesehatan berbasis Artificial Intelligence untuk membantu analisis gejala, rekomendasi layanan kesehatan, dan pencarian fasilitas kesehatan terdekat.",
 };
 
 export default function RootLayout({
@@ -32,19 +33,17 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
-      <body className="bg-white text-slate-900 transition-colors dark:bg-slate-950 dark:text-white">
-
+      <body className="min-h-screen overflow-x-hidden bg-white text-slate-900 antialiased transition-colors dark:bg-slate-950 dark:text-white">
         <ThemeProvider>
-
           {children}
 
           <Toaster
             richColors
             position="top-right"
+            closeButton
+            expand
           />
-
         </ThemeProvider>
-
       </body>
     </html>
   );

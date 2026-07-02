@@ -13,7 +13,7 @@ export default function HeroContent() {
         Navigasi Layanan Kesehatan Berbasis AI
       </Badge>
 
-      <h1 className="mt-8 text-5xl font-bold leading-[1.05] tracking-[-0.04em] text-slate-900 lg:text-7xl">
+      <h1 className="mt-8 text-4xl font-bold leading-tight tracking-[-0.03em] text-slate-900 sm:text-5xl lg:text-7xl">
         Temukan
         <br />
         Layanan Kesehatan
@@ -23,7 +23,7 @@ export default function HeroContent() {
         </GradientText>
       </h1>
 
-      <p className="mt-7 text-lg leading-8 text-slate-600">
+      <p className="mt-6 text-base leading-7 text-slate-600 lg:text-lg lg:leading-8">
         KompasSehat AI membantu Anda memahami gejala,
         mengetahui tingkat urgensi, serta menemukan
         layanan kesehatan yang tepat melalui analisis
