@@ -3,16 +3,13 @@ import { trustedItems } from "./trustedData";
 
 export default function Trusted() {
   return (
-    <section className="py-12 border-y border-slate-100 bg-white">
-
+    <section className="border-y border-slate-100 bg-white py-12">
       <Container>
-
         <p className="text-center text-sm font-medium uppercase tracking-[0.3em] text-slate-400">
-          Trusted Technologies
+          Teknologi yang Digunakan
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-10">
-
           {trustedItems.map(({ icon: Icon, label }) => (
             <div
               key={label}
@@ -23,14 +20,10 @@ export default function Trusted() {
               <span className="font-medium">
                 {label}
               </span>
-
             </div>
           ))}
-
         </div>
-
       </Container>
-
     </section>
   );
 }

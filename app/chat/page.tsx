@@ -8,7 +8,7 @@ import ChatWindow from "@/components/chat/ChatWindow";
 import ChatInput from "@/components/chat/ChatInput";
 
 export interface AIResponse {
-  urgency: string;
+  urgency: "Rendah" | "Sedang" | "Tinggi";
   recommendedService: string;
   possibleCondition: string;
   advice: string;
@@ -27,7 +27,7 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("healthroute-chat");
+    const saved = localStorage.getItem("kompassehat-chat");
 
     if (saved) {
       setMessages(JSON.parse(saved));
@@ -36,16 +36,16 @@ export default function ChatPage() {
 
   useEffect(() => {
     localStorage.setItem(
-      "healthroute-chat",
+      "kompassehat-chat",
       JSON.stringify(messages)
     );
   }, [messages]);
 
   return (
-    <main className="flex h-screen flex-col bg-slate-50">
+    <main className="flex h-dvh flex-col bg-slate-50">
       <ChatHeader />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         <ChatSidebar
           messages={messages}
           setMessages={setMessages}

@@ -46,7 +46,7 @@ export default function ChatWindow({
   }
 
   return (
-    <section className="flex-1 overflow-y-auto bg-slate-50 p-8">
+    <section className="flex-1 overflow-y-auto bg-slate-50 p-3 sm:p-5 lg:p-8">
       <div className="mx-auto max-w-4xl space-y-6">
         {messages.map((message, index) => (
           <div
@@ -72,7 +72,7 @@ export default function ChatWindow({
                 transition={{
                   duration: 0.35,
                 }}
-                className={`max-w-[75%] rounded-3xl px-5 py-4 shadow-sm ${
+                className={`max-w-[95%] sm:max-w-[80%] lg:max-w-[75%] rounded-3xl px-5 py-4 shadow-sm ${
                   message.role === "user"
                     ? "bg-gradient-to-r from-blue-600 to-violet-600 text-white"
                     : "border border-slate-200 bg-white text-slate-700"
@@ -142,7 +142,7 @@ function LoadingCard() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-7 shadow-lg"
+      className="w-full max-w-full rounded-3xl border border-slate-200 bg-white p-4 shadow-lg sm:max-w-xl sm:p-7"
     >
       <div className="flex items-center gap-3">
         <LoaderCircle
@@ -151,7 +151,7 @@ function LoadingCard() {
         />
 
         <h2 className="text-lg font-bold">
-          HealthRoute AI sedang berpikir...
+        KompasSehat AI sedang menganalisis...
         </h2>
       </div>
 
@@ -186,21 +186,18 @@ function AICard({
   
 
   const urgencyColor =
-    data.urgency === "High"
-      ? "text-red-600 bg-red-50"
-      : data.urgency === "Medium"
-      ? "text-amber-600 bg-amber-50"
-      : "text-emerald-600 bg-emerald-50";
+  data.urgency === "Tinggi"
+    ? "text-red-600 bg-red-50"
+    : data.urgency === "Sedang"
+    ? "text-amber-600 bg-amber-50"
+    : "text-emerald-600 bg-emerald-50";
 
-  const riskValue =
-    data.urgency === "High"
+    const riskValue =
+    data.urgency === "Tinggi"
       ? 100
-      : data.urgency === "Medium"
+      : data.urgency === "Sedang"
       ? 65
       : 30;
-
-  const [showEmergency, setShowEmergency] =
-    useState(false);
 
   function speakResult() {
     if (!("speechSynthesis" in window))
@@ -210,7 +207,7 @@ function AICard({
 
     const utterance =
       new SpeechSynthesisUtterance(`
-Hasil analisis HealthRoute AI.
+Hasil analisis KompasSehat AI.
 Tingkat urgensi ${data.urgency}.
 Kemungkinan kondisi ${data.possibleCondition}.
 Rekomendasi layanan ${data.recommendedService}.
@@ -224,11 +221,11 @@ Saran ${data.advice}.
     );
   }
 
-  function downloadPDF() {
+  function unduhLaporanPDF() {
     const doc = new jsPDF();
 
     doc.setFontSize(22);
-    doc.text("HealthRoute AI", 20, 20);
+    doc.text("KompasSehat AI", 20, 20);
 
     doc.setFontSize(15);
     doc.text("Laporan Analisis Kesehatan", 20, 32);
@@ -281,26 +278,18 @@ Saran ${data.advice}.
       emergencyY
     );
 
-    doc.save("HealthRoute-Report.pdf");
+    doc.save("KompasSehat-Laporan.pdf");
   }
 
   useEffect(() => {
     speakResult();
 
-    if (data.emergency) {
-      setShowEmergency(true);
-    }
-
     return () =>
       window.speechSynthesis.cancel();
   }, []);
 
-  function closeEmergency() {
-    setShowEmergency(false);
-  }
-
   return (
-    <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-7 shadow-lg">
+    <div className="w-full max-w-full rounded-3xl border border-slate-200 bg-white p-4 shadow-lg sm:max-w-xl sm:p-7">
     <h2 className="text-xl font-bold">
       🤖 Analisis Kesehatan AI
     </h2>
@@ -313,7 +302,7 @@ Saran ${data.advice}.
 
       <div>
         <div className="mb-2 flex justify-between text-sm">
-          <span>Risk Score</span>
+          <span>Skor Risiko</span>
           <span>{riskValue}%</span>
         </div>
 
@@ -323,9 +312,9 @@ Saran ${data.advice}.
             animate={{ width: `${riskValue}%` }}
             transition={{ duration: 1 }}
             className={`h-full rounded-full ${
-              data.urgency === "High"
+              data.urgency === "Tinggi"
                 ? "bg-red-500"
-                : data.urgency === "Medium"
+                : data.urgency === "Sedang"
                 ? "bg-yellow-500"
                 : "bg-green-500"
             }`}
@@ -434,7 +423,6 @@ Saran ${data.advice}.
       )}
 
       <motion.button
-        whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
         onClick={speakResult}
         className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-100 py-3 font-semibold"
@@ -444,7 +432,6 @@ Saran ${data.advice}.
       </motion.button>
 
       <motion.button
-        whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
         onClick={() => {
           if (!navigator.geolocation) {
@@ -483,11 +470,11 @@ Saran ${data.advice}.
       <motion.button
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
-        onClick={downloadPDF}
+        onClick={unduhLaporanPDF}
         className="flex w-full items-center justify-center gap-2 rounded-2xl border border-blue-600 py-3 font-semibold text-blue-600 hover:bg-blue-50"
       >
         <Download size={20} />
-        Download Laporan PDF
+        Unduh Laporan PDF
       </motion.button>
       <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
           <div className="flex items-start gap-3">

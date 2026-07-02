@@ -3,20 +3,20 @@ import { Search, BrainCircuit, MapPinned } from "lucide-react";
 export const steps = [
   {
     icon: Search,
-    title: "Describe Symptoms",
+    title: "Jelaskan Gejala",
     description:
-      "Tell HealthRoute AI what symptoms you are experiencing in simple language.",
+      "Masukkan gejala yang Anda alami atau unggah foto apabila diperlukan sebagai bahan analisis.",
   },
   {
     icon: BrainCircuit,
-    title: "AI Analysis",
+    title: "Analisis oleh AI",
     description:
-      "Our AI analyzes your symptoms and estimates the urgency level.",
+      "KompasSehat AI menganalisis informasi yang diberikan untuk memperkirakan tingkat urgensi dan kemungkinan kondisi kesehatan.",
   },
   {
     icon: MapPinned,
-    title: "Get Recommendation",
+    title: "Dapatkan Rekomendasi",
     description:
-      "Receive the most suitable healthcare facility near your location.",
+      "Sistem memberikan rekomendasi layanan kesehatan yang sesuai serta membantu membuka lokasi fasilitas kesehatan melalui Google Maps.",
   },
 ];

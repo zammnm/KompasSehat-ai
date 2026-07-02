@@ -9,11 +9,12 @@ export default function HowItWorks() {
   return (
     <Section id="how-it-works">
       <Container>
+
         <SectionTitle
-          badge="HOW IT WORKS"
-          title="Get Healthcare"
-          gradient="in 3 Simple Steps"
-          description="Using HealthRoute AI is fast, simple, and only takes a few moments."
+          badge="CARA KERJA"
+          title="Cara Kerja"
+          gradient="KompasSehat AI"
+          description="Ikuti langkah-langkah sederhana berikut untuk memperoleh analisis awal kondisi kesehatan dan rekomendasi layanan medis yang sesuai."
         />
 
         <div className="mt-20 grid gap-8 md:grid-cols-3">
@@ -25,6 +26,7 @@ export default function HowItWorks() {
             />
           ))}
         </div>
+
       </Container>
     </Section>
   );

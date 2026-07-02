@@ -14,7 +14,7 @@ export default function ChatHeader() {
 
         <div>
           <h1 className="text-lg font-bold">
-            HealthRoute AI
+          KompasSehat AI AI
           </h1>
 
           <p className="text-xs text-slate-500">

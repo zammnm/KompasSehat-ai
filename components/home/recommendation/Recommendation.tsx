@@ -11,10 +11,10 @@ export default function Recommendation() {
       <Container>
 
         <SectionTitle
-          badge="RECOMMENDATION"
-          title="Nearby Healthcare"
-          gradient="Recommendations"
-          description="AI recommends the best healthcare facilities based on your symptoms and current location."
+          badge="FASILITAS KESEHATAN"
+          title="Temukan"
+          gradient="Rumah Sakit Terdekat"
+          description="Klik tombol di bawah untuk membuka Google Maps dan mencari rumah sakit, klinik, maupun puskesmas terdekat sesuai lokasi Anda."
         />
 
         <div className="mt-20 grid gap-8 md:grid-cols-2 xl:grid-cols-3">

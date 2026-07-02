@@ -25,16 +25,17 @@ export default function Footer() {
               </div>
 
               <h2 className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-3xl font-bold text-transparent">
-                HealthRoute AI
+              KompasSehat AI
               </h2>
 
             </div>
 
             <p className="mt-5 leading-7 text-slate-500">
-              Platform AI yang membantu pengguna memahami gejala,
-              menemukan layanan kesehatan yang tepat, serta memberikan
-              rekomendasi medis secara cepat dan aman.
-            </p>
+          Platform berbasis Artificial Intelligence yang membantu
+          masyarakat memahami gejala, mengetahui tingkat urgensi,
+          serta menemukan fasilitas kesehatan terdekat dengan cepat
+          dan mudah.
+       </p>
 
             <div className="mt-6 flex gap-4">
 
@@ -66,7 +67,7 @@ export default function Footer() {
             title="Produk"
             links={[
               "AI Consultation",
-              "Medical Recommendation",
+              "Medical Rekomendasi",
               "Nearby Hospital",
               "Image Analysis",
             ]}
@@ -96,15 +97,15 @@ export default function Footer() {
 
         <div className="flex flex-col items-center justify-between gap-3 border-t border-slate-200 py-8 text-sm text-slate-500 md:flex-row">
 
-          <p>
-            © 2026 <span className="font-semibold">HealthRoute AI</span>. All rights reserved.
-          </p>
+  <p>
+    © 2026 <span className="font-semibold">KompasSehat AI</span>. Seluruh hak cipta dilindungi.
+  </p>
 
-          <p>
-            ❤️ Dibuat dengan Next.js + Gemini AI + Tailwind CSS
-          </p>
+  <p>
+    Membantu masyarakat menemukan layanan kesehatan secara lebih cepat dengan dukungan Artificial Intelligence.
+  </p>
 
-        </div>
+</div>
       </Container>
     </footer>
   );

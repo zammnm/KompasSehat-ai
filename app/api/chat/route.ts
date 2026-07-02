@@ -1,8 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
-
-
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || "",
 });
@@ -14,7 +12,6 @@ export async function POST(req: NextRequest) {
       image,
       history = [],
     } = await req.json();
-    
 
     console.log("HISTORY =", history.length);
 
@@ -22,49 +19,58 @@ export async function POST(req: NextRequest) {
       .map((msg: any) => {
         if (typeof msg.content === "string") {
           return `${
-            msg.role === "user" ? "User" : "Assistant"
+            msg.role === "user"
+              ? "Pengguna"
+              : "KompasSehat AI"
           }: ${msg.content}`;
         }
 
         return `
-Assistant:
+KompasSehat AI:
 Urgensi: ${msg.content.urgency}
 Layanan: ${msg.content.recommendedService}
-Kondisi: ${msg.content.possibleCondition}
+Kemungkinan Kondisi: ${msg.content.possibleCondition}
 Saran: ${msg.content.advice}
 `;
       })
       .join("\n");
 
     const prompt = `
-Kamu adalah HealthRoute AI.
+Kamu adalah KompasSehat AI, asisten kesehatan berbasis kecerdasan buatan.
 
 Tugasmu:
-- Ingat seluruh riwayat percakapan.
-- Gabungkan gejala lama dan baru.
-- Analisis gambar jika tersedia.
-- Jangan memberikan diagnosis pasti.
-- Gunakan Bahasa Indonesia.
-- Balas HANYA JSON.
 
-Format:
+- Selalu gunakan Bahasa Indonesia yang baik dan mudah dipahami.
+- Ingat seluruh riwayat percakapan sebelumnya.
+- Gabungkan gejala lama dan gejala terbaru sebelum memberikan analisis.
+- Analisis gambar apabila pengguna mengirimkan gambar.
+- Jangan pernah memberikan diagnosis medis yang pasti.
+- Berikan kemungkinan kondisi berdasarkan gejala yang tersedia.
+- Tentukan tingkat urgensi secara objektif.
+- Berikan rekomendasi layanan kesehatan yang paling sesuai.
+- Apabila kondisi berpotensi darurat, aktifkan emergency = true.
+- Apabila kondisi tidak darurat, emergency = false.
+- Balas HANYA dalam format JSON.
+- Jangan menambahkan markdown, penjelasan, ataupun kalimat lain di luar JSON.
+
+Format JSON yang WAJIB digunakan:
 
 {
-  "urgency":"Low | Medium | High",
-  "recommendedService":"",
-  "possibleCondition":"",
-  "advice":"",
-  "hospitalKeyword":"",
-  "emergency":false
+  "urgency": "Rendah | Sedang | Tinggi",
+  "recommendedService": "",
+  "possibleCondition": "",
+  "advice": "",
+  "hospitalKeyword": "",
+  "emergency": false
 }
 
-Riwayat:
+Riwayat Percakapan:
 
 ${conversation}
 
-Pesan terbaru:
+Pesan Terbaru:
 
-${message || "Tidak ada teks"}
+${message || "Tidak ada pesan."}
 `;
 
     let response;
@@ -117,6 +123,7 @@ ${message || "Tidak ada teks"}
       success: true,
       reply: json,
     });
+
   } catch (error) {
     console.error("API Error:", error);
 
@@ -124,10 +131,11 @@ ${message || "Tidak ada teks"}
       {
         success: false,
         reply: {
-          urgency: "Low",
+          urgency: "Rendah",
           recommendedService: "-",
           possibleCondition: "-",
-          advice: "Terjadi kesalahan saat memproses permintaan.",
+          advice:
+            "Terjadi kesalahan saat memproses permintaan. Silakan coba beberapa saat lagi.",
           hospitalKeyword: "Rumah Sakit",
           emergency: false,
         },

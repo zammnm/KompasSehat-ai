@@ -6,12 +6,12 @@ export default function HeroIllustration() {
       {/* Glow */}
       <div className="absolute inset-0 rounded-[36px] bg-gradient-to-br from-blue-500/20 via-violet-500/10 to-cyan-400/10 blur-3xl" />
 
-      {/* Floating Badge */}
+      {/* Status AI */}
       <div className="absolute -top-6 right-4 z-20 rounded-full border border-emerald-200 bg-white px-4 py-2 shadow-lg">
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
           <span className="text-xs font-semibold text-slate-700">
-            AI Online
+            AI Aktif
           </span>
         </div>
       </div>
@@ -26,11 +26,11 @@ export default function HeroIllustration() {
 
             <div>
               <p className="font-semibold text-slate-900">
-                HealthRoute AI
+                KompasSehat AI
               </p>
 
               <p className="text-sm text-slate-500">
-                Smart Healthcare Assistant
+                Asisten Kesehatan Pintar
               </p>
             </div>
           </div>
@@ -42,10 +42,10 @@ export default function HeroIllustration() {
 
         <div className="my-6 h-px bg-slate-100" />
 
-        {/* User */}
+        {/* Pengguna */}
         <div className="flex justify-end">
           <div className="max-w-[80%] rounded-3xl rounded-br-lg bg-blue-600 px-5 py-3 text-sm text-white">
-            I have had a fever for 3 days.
+            Saya mengalami demam selama 3 hari.
           </div>
         </div>
 
@@ -57,56 +57,59 @@ export default function HeroIllustration() {
 
           <div className="rounded-3xl rounded-tl-lg bg-slate-100 px-5 py-4">
             <p className="text-sm text-slate-600">
-              Analyzing your symptoms...
+              Sedang menganalisis gejala Anda...
             </p>
           </div>
         </div>
 
-        {/* Result */}
+        {/* Hasil */}
         <div className="mt-8 rounded-3xl border border-slate-200 bg-slate-50 p-5">
           <div className="grid grid-cols-3 gap-5">
             <div>
               <p className="text-xs uppercase text-slate-400">
-                Urgency
+                Tingkat Urgensi
               </p>
+
               <p className="mt-2 font-semibold text-amber-600">
-                Medium
+                Sedang
               </p>
             </div>
 
             <div>
               <p className="text-xs uppercase text-slate-400">
-                Recommendation
+                Rekomendasi
               </p>
+
               <p className="mt-2 font-semibold">
-                General Doctor
+                Dokter Umum
               </p>
             </div>
 
             <div>
               <p className="text-xs uppercase text-slate-400">
-                Distance
+                Jarak
               </p>
+
               <p className="mt-2 font-semibold">
-                2.1 KM
+                2,1 KM
               </p>
             </div>
           </div>
 
           <button className="mt-6 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-3 font-semibold text-white">
-            Open Maps 🚀
+            Buka Google Maps
           </button>
         </div>
       </GlassCard>
 
-      {/* Accuracy Badge */}
+      {/* Badge Akurasi */}
       <div className="absolute -bottom-5 -left-5 hidden rounded-2xl border border-slate-200 bg-white px-5 py-3 shadow-lg lg:block">
         <p className="text-xs text-slate-500">
-          AI Accuracy
+          Akurasi AI
         </p>
 
         <p className="mt-1 bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-lg font-bold text-transparent">
-          98.2%
+          98,2%
         </p>
       </div>
     </div>

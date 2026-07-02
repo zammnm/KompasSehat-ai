@@ -27,7 +27,7 @@ export default function Footer() {
                   />
                 </svg>
               </div>
-              <span className="text-sm font-semibold text-slate-900">HealthRoute AI</span>
+              <span className="text-sm font-semibold text-slate-900">KompasSehat AI</span>
             </a>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-500">
               AI-powered healthcare navigation for smarter, faster, and more
@@ -68,10 +68,10 @@ export default function Footer() {
 
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-slate-200/80 pt-8 sm:flex-row">
           <p className="text-sm text-slate-400">
-            © {new Date().getFullYear()} HealthRoute AI. All rights reserved.
+            © {new Date().getFullYear()} KompasSehat AI. All rights reserved.
           </p>
           <p className="text-xs text-slate-400">
-            HealthRoute AI is not a substitute for professional medical advice,
+          KompasSehat AI is not a substitute for professional medical advice,
             diagnosis, or treatment.
           </p>
         </div>

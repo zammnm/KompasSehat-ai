@@ -76,86 +76,132 @@ export default function ChatInput({
   }
 
   async function sendMessage() {
-    if ((!input.trim() && !image) || loading) return;
+    const text = input.trim();
+  
+    if (loading) return;
+  
+    if (!text && !image) return;
+  
+    // Tidak boleh kosong
+if (!image && text.length === 0) {
+  return;
+}
 
+// Minimal 5 karakter
+if (!image && text.length < 5) {
+  toast.error("Mohon jelaskan gejala Anda dengan lebih lengkap.");
+  return;
+}
+
+// Hanya simbol
+if (!image && /^[^a-zA-ZÀ-ÿ0-9\s]+$/.test(text)) {
+  toast.error("Masukkan gejala yang valid.");
+  return;
+}
+
+// Sapaan umum
+const greetings = [
+  "halo",
+  "hai",
+  "hi",
+  "test",
+  "tes",
+  "woi",
+  "p",
+  "ping",
+];
+
+if (
+  !image &&
+  greetings.includes(text.toLowerCase())
+) {
+  toast.error(
+    "Silakan jelaskan gejala yang Anda alami agar KompasSehat AI dapat membantu."
+  );
+  return;
+}
+  
     if (listening) {
       SpeechRecognition.stopListening();
     }
-
+  
     const userMessage: Message = {
       role: "user",
-      content: input || "📷 Mengirim gambar...",
+      content: text || "📷 Mengirim gambar...",
       time: new Date().toLocaleTimeString("id-ID", {
         hour: "2-digit",
         minute: "2-digit",
       }),
     };
-
+  
     setMessages((prev) => [...prev, userMessage]);
-
+  
     setLoading(true);
-
+  
     try {
       let imageBase64 = "";
-
+  
       if (image) {
         imageBase64 = await new Promise<string>((resolve) => {
           const reader = new FileReader();
-
+  
           reader.onload = () => {
             resolve(reader.result?.toString() || "");
           };
-
+  
           reader.readAsDataURL(image);
         });
       }
-
+  
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: input,
+          message: text,
           image: imageBase64,
           mimeType: image?.type,
           history: messages,
         }),
       });
-
+  
       const data = await res.json();
-
-console.log("========== FRONTEND ==========");
-console.log(data);
-console.log("==============================");
-
-setMessages((prev) => [
-  ...prev,
-  {
-    role: "assistant",
-    content: data.reply,
-    time: new Date().toLocaleTimeString("id-ID", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-  },
-]);
-
+  
+      console.log("========== FRONTEND ==========");
+      console.log(data);
+      console.log("==============================");
+  
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: data.reply,
+          time: new Date().toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        },
+      ]);
+  
       toast.success("🤖 Analisis selesai");
-
+  
       setInput("");
       setImage(null);
       resetTranscript();
     } catch (error) {
       console.error(error);
-
-      toast.error("Terjadi kesalahan");
-
+  
+      toast.error(
+        "Maaf, KompasSehat AI sedang mengalami gangguan."
+      );
+  
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: "Terjadi kesalahan.",
+          content:
+  "Maaf, terjadi kendala saat memproses permintaan Anda. Silakan coba kembali beberapa saat lagi.",
           time: new Date().toLocaleTimeString("id-ID", {
             hour: "2-digit",
             minute: "2-digit",
@@ -168,7 +214,7 @@ setMessages((prev) => [
   }
 
   return (
-    <div className="border-t border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-950">
+    <div className="border-t border-slate-200 bg-white p-3 sm:p-5">
       <ImageUpload
         onSelect={(file) => {
           setImage(file);
@@ -184,8 +230,8 @@ setMessages((prev) => [
           </span>
         </div>
       )}
-
-      <div className="mx-auto flex max-w-4xl items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+<div className="mx-auto flex max-w-4xl flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center">
+      
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -195,12 +241,12 @@ setMessages((prev) => [
             }
           }}
           placeholder="Ceritakan gejala yang Anda alami..."
-          className="flex-1 bg-transparent text-slate-900 outline-none placeholder:text-slate-400 dark:text-white"
+          className="min-h-[44px] flex-1 bg-transparent text-slate-900 outline-none placeholder:text-slate-400"
         />
 
         <button
           onClick={toggleListening}
-          className={`flex h-11 w-11 items-center justify-center rounded-xl transition ${
+          className={`flex h-12 w-full items-center justify-center rounded-xl transition sm:h-11 sm:w-11 ${
             listening
               ? "animate-pulse bg-red-500 text-white"
               : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
@@ -212,7 +258,7 @@ setMessages((prev) => [
         <button
           onClick={sendMessage}
           disabled={loading}
-          className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-5 py-3 font-semibold text-white transition hover:scale-105 disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-5 py-3 font-semibold text-white transition hover:scale-105 disabled:opacity-50 sm:w-auto"
         >
           <Send size={18} />
           {loading ? "Mengirim..." : "Kirim"}

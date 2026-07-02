@@ -10,12 +10,11 @@ export default function AIDemo() {
   return (
     <Section>
       <Container>
-
         <SectionTitle
-          badge="AI DEMO"
-          title="See How"
-          gradient="HealthRoute AI Works"
-          description="A simple preview of how our AI analyzes symptoms."
+          badge="DEMO AI"
+          title="Lihat Cara"
+          gradient="KompasSehat AI Bekerja"
+          description="Simulasi sederhana bagaimana AI menganalisis gejala dan memberikan rekomendasi layanan kesehatan."
         />
 
         <GlassCard className="mx-auto mt-20 max-w-3xl p-8">
@@ -23,7 +22,7 @@ export default function AIDemo() {
           <div className="space-y-5">
 
             <ChatBubble
-              message="I have had a fever and headache for 3 days."
+              message="Saya sudah demam tinggi disertai sakit kepala selama 3 hari."
             />
 
             <div className="flex gap-3">
@@ -40,7 +39,7 @@ export default function AIDemo() {
 
             <ChatBubble
               ai
-              message="Based on your symptoms, we recommend visiting a General Practitioner within the next 24 hours."
+              message="Berdasarkan gejala yang Anda sampaikan, kondisi memerlukan pemeriksaan oleh dokter umum dalam waktu 24 jam. Saya juga dapat membantu menemukan rumah sakit atau klinik terdekat."
             />
 
           </div>

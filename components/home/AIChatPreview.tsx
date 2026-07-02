@@ -1,7 +1,7 @@
 const messages = [
   {
     role: "ai" as const,
-    content: "Good morning! I'm HealthRoute AI. How can I help you with your health concerns today?",
+    content: "Good morning! I'm KompasSehat AI. How can I help you with your health concerns today?",
     time: "9:01 AM",
   },
   {
@@ -84,7 +84,7 @@ export default function AIChatPreview() {
                     </svg>
                   </div>
                   <div>
-                    <div className="text-sm font-semibold text-slate-900">HealthRoute AI</div>
+                    <div className="text-sm font-semibold text-slate-900">KompasSehat AI</div>
                     <div className="flex items-center gap-1.5 text-xs text-emerald-600">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                       Online

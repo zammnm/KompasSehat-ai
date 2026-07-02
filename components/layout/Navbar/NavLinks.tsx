@@ -1,18 +1,18 @@
 const links = [
   {
-    label: "Features",
+    label: "Fitur",
     href: "#features",
   },
   {
-    label: "How It Works",
+    label: "Cara Kerja",
     href: "#how-it-works",
   },
   {
-    label: "AI Chat",
+    label: "Chat AI",
     href: "/chat",
   },
   {
-    label: "About",
+    label: "Tentang",
     href: "#about",
   },
 ];
@@ -20,21 +20,13 @@ const links = [
 export default function NavLinks() {
   return (
     <nav className="hidden lg:flex items-center gap-8">
-      {links.map((item, index) => (
+      {links.map((item) => (
         <a
           key={item.label}
           href={item.href}
-          className={`relative py-2 text-sm font-medium transition-all duration-300 ${
-            index === 0
-              ? "text-blue-600"
-              : "text-slate-600 hover:text-blue-600"
-          }`}
+          className="text-sm font-medium text-slate-600 transition hover:text-blue-600"
         >
           {item.label}
-
-          {index === 0 && (
-            <span className="absolute left-0 -bottom-1 h-0.5 w-full rounded-full bg-blue-600" />
-          )}
         </a>
       ))}
     </nav>

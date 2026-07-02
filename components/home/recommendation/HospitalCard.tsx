@@ -1,6 +1,12 @@
+"use client";
+
 import GlassCard from "@/components/ui/GlassCard";
-import { Star, Clock, MapPin } from "lucide-react";
-import { LucideIcon } from "lucide-react";
+
+import {
+  HeartPulse,
+  MapPin,
+  Clock,
+} from "lucide-react";
 
 interface Props {
   name: string;
@@ -8,7 +14,7 @@ interface Props {
   distance: string;
   time: string;
   rating: number;
-  icon: LucideIcon;
+  icon: "hospital" | "location" | "clock";
   color: string;
 }
 
@@ -18,9 +24,47 @@ export default function HospitalCard({
   distance,
   time,
   rating,
-  icon: Icon,
+  icon,
   color,
 }: Props) {
+  const icons = {
+    hospital: HeartPulse,
+    location: MapPin,
+    clock: Clock,
+  };
+
+  const Icon = icons[icon];
+
+  function openMaps() {
+    if (!navigator.geolocation) {
+      window.open(
+        `https://www.google.com/maps/search/${encodeURIComponent(name)}`,
+        "_blank"
+      );
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        window.open(
+          `https://www.google.com/maps/search/${encodeURIComponent(
+            name
+          )}/@${lat},${lng},15z`,
+          "_blank"
+        );
+      },
+      () => {
+        window.open(
+          `https://www.google.com/maps/search/${encodeURIComponent(name)}`,
+          "_blank"
+        );
+      }
+    );
+  }
+
   return (
     <GlassCard className="group p-7">
       <div
@@ -37,28 +81,17 @@ export default function HospitalCard({
         {type}
       </p>
 
-      <div className="mt-6 flex items-center justify-between text-sm text-slate-500">
-        <div className="flex items-center gap-2">
-          <MapPin size={16} />
-          {distance}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Clock size={16} />
-          {time}
-        </div>
+      <div className="mt-5 space-y-2 text-sm text-slate-600">
+        <p>📍 Jarak: {distance}</p>
+        <p>⏱️ Perkiraan waktu: {time}</p>
+        <p>⭐ Rating: {rating}</p>
       </div>
 
-      <div className="mt-4 flex items-center gap-2">
-        <Star
-          size={16}
-          className="fill-yellow-400 text-yellow-400"
-        />
-        <span className="font-semibold">{rating}</span>
-      </div>
-
-      <button className="mt-6 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-3 font-semibold text-white transition hover:scale-[1.02]">
-        View Hospital
+      <button
+        onClick={openMaps}
+        className="mt-6 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 py-3 font-semibold text-white transition hover:scale-[1.02]"
+      >
+        Lihat di Google Maps
       </button>
     </GlassCard>
   );

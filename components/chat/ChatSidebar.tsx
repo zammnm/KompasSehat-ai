@@ -25,26 +25,26 @@ export default function ChatSidebar({
   );
 
   function newChat() {
-    localStorage.removeItem("healthroute-chat");
+    localStorage.removeItem("kompassehat-chat");
     setMessages([]);
   }
 
   return (
-    <aside className="flex w-72 flex-col border-r border-slate-200 bg-white p-5">
+    <aside className="hidden w-72 flex-col border-r border-slate-200 bg-white p-5 lg:flex">
 
       <button
         onClick={newChat}
         className="mb-6 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 py-3 font-semibold text-white transition hover:scale-105"
       >
         <Plus size={18} />
-        New Chat
+        Chat Baru
       </button>
 
       <div className="mb-5 rounded-2xl bg-slate-100 p-4">
 
         <div className="flex items-center justify-between">
           <span className="text-sm text-slate-500">
-            Total Chat
+          Total Percakapan
           </span>
 
           <span className="font-bold text-slate-800">
@@ -54,7 +54,7 @@ export default function ChatSidebar({
 
         <div className="mt-3 flex items-center justify-between">
           <span className="text-sm text-slate-500">
-            AI Response
+          Respons AI
           </span>
 
           <span className="font-bold text-slate-800">

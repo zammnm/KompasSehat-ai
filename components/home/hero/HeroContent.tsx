@@ -10,36 +10,36 @@ export default function HeroContent() {
     <div>
 
       <Badge>
-        AI-Powered Healthcare Navigation
+        Navigasi Layanan Kesehatan Berbasis AI
       </Badge>
 
       <h1 className="mt-8 text-5xl font-bold leading-[1.05] tracking-[-0.04em] text-slate-900 lg:text-7xl">
-        Navigate
+        Temukan
         <br />
-        Healthcare
+        Layanan Kesehatan
         <br />
         <GradientText>
-          with AI
+          Bersama KompasSehat AI
         </GradientText>
       </h1>
 
       <p className="mt-7 text-lg leading-8 text-slate-600">
-        HealthRoute AI membantu pengguna memahami gejala,
-        menentukan tingkat urgensi, dan menemukan layanan
-        kesehatan yang tepat menggunakan teknologi
-        Artificial Intelligence.
+        KompasSehat AI membantu Anda memahami gejala,
+        mengetahui tingkat urgensi, serta menemukan
+        layanan kesehatan yang tepat melalui analisis
+        berbasis Artificial Intelligence (AI).
       </p>
 
       <div className="mt-10 flex flex-col gap-4 sm:flex-row">
 
         <Link href="/chat">
           <Button variant="primary">
-            Coba HealthRoute AI →
+            Mulai Konsultasi AI →
           </Button>
         </Link>
 
         <Button variant="secondary">
-          Watch Demo
+          Pelajari Cara Kerjanya
         </Button>
 
       </div>

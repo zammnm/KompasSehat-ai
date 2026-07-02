@@ -9,14 +9,15 @@ export default function Features() {
   return (
     <Section id="features">
       <Container>
+
         <SectionTitle
-          badge="FEATURES"
-          title="Everything You Need"
-          gradient="for Better Healthcare"
-          description="HealthRoute AI combines artificial intelligence and healthcare services into one modern platform."
+          badge="FITUR UTAMA"
+          title="Semua yang Anda Butuhkan"
+          gradient="dalam KompasSehat AI"
+          description="KompasSehat AI membantu Anda memahami gejala, menilai tingkat urgensi, memberikan rekomendasi layanan kesehatan, serta menemukan fasilitas kesehatan terdekat dengan cepat dan mudah."
         />
 
-        <div className="mt-20 grid gap-8 md:grid-cols-2 xl:grid-cols-3 auto-rows-fr">
+        <div className="mt-20 grid auto-rows-fr gap-8 md:grid-cols-2 xl:grid-cols-2">
           {features.map((feature) => (
             <FeatureCard
               key={feature.title}
@@ -24,6 +25,7 @@ export default function Features() {
             />
           ))}
         </div>
+
       </Container>
     </Section>
   );
